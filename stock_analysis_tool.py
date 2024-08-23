@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+import requests
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -9,20 +11,21 @@ def scrape_tickers_from_yahoo(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     
     tickers = []
-    for row in soup.find_all('tr', {'class': 'simpTblRow'}):
-        ticker = row.find('td', {'aria-label': 'Symbol'}).text.strip()
+    for div in soup.find_all('div', {'class': 'name yf-ravs5v stacked'}):
+        ticker = div.find('span', {'class': 'symbol yf-ravs5v'}).text.strip()
         tickers.append(ticker)
     
     return tickers
 
 # Example URLs for Yahoo Finance screens
-url = 'https://finance.yahoo.com/gainers'  # URL for the "Top Gainers" page
+url = 'https://finance.yahoo.com/markets/stocks/gainers/'  # URL for the "Top Gainers" page
 # Other examples:
-# url = 'https://finance.yahoo.com/losers'  # Top Losers
-# url = 'https://finance.yahoo.com/most-active'  # Most Active Stocks
+# url = 'https://finance.yahoo.com/markets/stocks/losers/'  # Top Losers
+# url = https://finance.yahoo.com/markets/stocks/most-active/'  # Most Active Stocks
 
 # Scrape the tickers
 tickers = scrape_tickers_from_yahoo(url)
+print(f"Scraped Tickers: {tickers}")
 
 # Step 2: Fetch data for each ticker
 end_date = datetime.today()
